@@ -160,6 +160,11 @@ b,strong{font-weight:600}
 .sk .pg[hidden]{display:none}
 .sk .rng{display:flex;flex-wrap:wrap;gap:var(--cds-gap-sm);align-items:flex-end;margin:0 0 var(--cds-gap-md);padding:var(--cds-pad-md) var(--cds-pad-lg);background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius)}
 .sk .rng[hidden]{display:none}
+.sk .olcek{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 var(--cds-gap-sm)}
+.sk .olcek .u{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-right:2px}
+.sk .olcek .kay{display:inline-flex;flex-direction:row;align-items:center;gap:8px;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);flex:0 1 auto;min-width:0;margin-left:4px}
+.sk .olcek input[type=range]{flex:0 1 11rem;width:11rem;min-width:6rem;max-width:100%;accent-color:var(--color-fg);margin:0;height:28px;padding:0;border:0;background:none}
+.sk .olcek .kay b{color:var(--color-fg);font-weight:var(--cds-font-weight-medium);min-width:3.6em;font-variant-numeric:tabular-nums}
 .sk .rng .chips{display:flex;flex-wrap:wrap;gap:6px}
 .sk .rng .lbl{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);width:100%;margin-bottom:-4px}
 .sk .rng select{min-width:9.5rem}
@@ -180,7 +185,7 @@ b,strong{font-weight:600}
       <span class="pill">Türkşeker: fiyat kararları, <span id="m-ts" data-source="ts_aylik" data-field="donem" class="dash-skeleton">—</span> ayına kadar</span>
       <span class="pill">TÜFE: TCMB, <span id="m-tufe" data-source="tufe" data-field="donem" class="dash-skeleton">—</span> ayına kadar</span>
       <span class="pill">Tüm fiyatlar fabrika teslim (nakliye hariç) · 1 çuval = 50 kg</span>
-      <span class="pill">Çevrimdışı kopya · 11.11.2026</span>
+      <span class="pill">Çevrimdışı kopya · 12.11.2026</span>
     </div>
   </header>
 
@@ -264,6 +269,14 @@ b,strong{font-weight:600}
     <div class="card mt" id="kart-fark">
       <h2>Türkşeker uygulanan fiyatı piyasaya göre</h2>
       <p class="note" id="fark-note"></p>
+      <div class="olcek" id="fark-olcek" role="group" aria-label="Grafik ölçeği">
+        <span class="u">Ölçek</span>
+        <button class="btn" type="button" data-fl="0">Tümü sığsın</button>
+        <button class="btn" type="button" data-fl="5">±%5</button>
+        <button class="btn" type="button" data-fl="10">±%10</button>
+        <button class="btn" type="button" data-fl="20">±%20</button>
+        <label class="kay">Elle <input id="fark-l" type="range" min="2" max="60" step="1" value="5" aria-label="Ölçek sınırı, yüzde"><b id="fark-lv">±%5</b></label>
+      </div>
       <div class="lg" id="lg-fark"></div>
       <div class="chart" id="grafik-fark" data-source="fark"></div>
     </div>
@@ -550,7 +563,7 @@ b,strong{font-weight:600}
         <li><b>Gıda:</b> TCMB EVDS, TP.TUKFIY2025.01 “Gıda ve alkolsüz içecekler – yüzde değişim” (TÜİK verisi; EVDS_30-10-2026.xlsx, Ocak 2021 – Eylül 2026). Ekim 2026 değeri (aylık %3,50, yıllık %27,73) TÜİK'in 3 Kasım 2026 açıklamasından eklendi.</li>
         <li><b>Şeker TÜFE:</b> TÜİK, “COICOP 2018 alt sınıflarına göre TÜFE aylık ve yıllık değişim oranları”, şeker alt sınıfı (Ocak 2021 – Ekim 2026; 11.11.2026'da iletilen dosya).</li>
         <li><b>Türkşeker:</b> ŞEKER SATIŞ FİYATLARIMIZ.xlsx — Güncel (2022–2026 fiyat ve maliyetler, YK karar tablosu), 2019-24 (2019–2021 tek fiyatlar) ve Sayfa1 (üç ayın gerçekleşen ortalaması) sayfaları.</li>
-        <li>Bu dosya 11.11.2026 tarihli çevrimdışı kopyadır: bütün veriler dosyanın içindedir, açmak için hesap ya da internet bağlantısı gerekmez. Veriler güncellendiğinde yeni kopya hazırlanmalıdır.</li>
+        <li>Bu dosya 12.11.2026 tarihli çevrimdışı kopyadır: bütün veriler dosyanın içindedir, açmak için hesap ya da internet bağlantısı gerekmez. Veriler güncellendiğinde yeni kopya hazırlanmalıdır.</li>
       </ul>
     </div>
   </section>
@@ -817,7 +830,7 @@ b,strong{font-weight:600}
 
   // ---------- Durum ----------
   const S = { kdv: 'haric', birim: 'kg', tab: 'ozet', bas: null, bit: null, sYil: null, sAy: null, A: null, B: null, q: '', sort: 'donem', dir: -1, hm: 'f',
-    show: { p: true, g: true, band: false, w: true }, tkYil: '', tkTur: '', tkQ: '' };
+    show: { p: true, g: true, band: false, w: true }, tkYil: '', tkTur: '', tkQ: '', farkL: 5 };
   const fld = () => S.birim + '_' + S.kdv;
   const nakF = () => (S.birim === 'kg' ? 'nak_kg' : 'nak_cv');
   const unit = () => (S.birim === 'kg' ? '₺/kg' : '₺/çuval');
@@ -852,6 +865,8 @@ b,strong{font-weight:600}
   $('#r-temizle').addEventListener('click', () => { S.bas = null; S.bit = null; redraw(); });
   $('#r-bit').addEventListener('change', (e) => { S.bit = e.target.value; if (S.bas && S.bas > S.bit) S.bas = S.bit; redraw(); });
   root.querySelectorAll('[data-hm]').forEach((b) => b.addEventListener('click', () => { S.hm = b.dataset.hm; redraw(); }));
+  root.querySelectorAll('[data-fl]').forEach((b) => b.addEventListener('click', () => { S.farkL = +b.dataset.fl; if (hasCore()) drawFark(); }));
+  $('#fark-l').addEventListener('input', (e) => { S.farkL = +e.target.value; if (hasCore()) drawFark(); });
   $('#s-yil').addEventListener('change', (e) => { S.sYil = +e.target.value; S.sAy = null; redraw(); });
   $('#s-ay').addEventListener('change', (e) => { S.sAy = +e.target.value; redraw(); });
   $('#s-son').addEventListener('click', () => { S.sYil = null; S.sAy = null; redraw(); });
@@ -884,6 +899,33 @@ b,strong{font-weight:600}
     const c = C();
     $('#sw-p').style.background = c.p; $('#sw-t').style.background = c.t;
     $('#sw-e').style.background = c.e; $('#sw-g').style.background = c.g; $('#sw-s').style.background = c.s; $('#sw-p2').style.background = c.p; $('#sw-t2').style.background = c.t;
+  }
+
+  // ---------- Fark grafiği (ayarlanabilir ölçek) ----------
+  function drawFark() {
+    const F = fld(), k = S.kdv, c = C();
+    let fr = D.fark.data.map((r) => ({ t: toDate(r.donem), donem: r.donem, v: r['fark_' + k], r, eksik: gunNot(D.tMap.get(r.donem) || {}) }));
+    fr = fr.filter((r) => inR(r.donem));
+    $('#fark-note').textContent = '(Türkşeker uygulanan fiyatı ÷ piyasa fiyatı) − 1, fabrika teslim, ' + kdvL() + '. Soluk çubuklar: o ayın bir kısmında genel iskontolu fiyat yok; kampanya fiyatları kullanıldı veya gün hesaba girmedi.';
+    legend($('#lg-fark'), [{ label: 'Türkşeker piyasanın üzerinde', color: c.t, cls: 'band' }, { label: 'Türkşeker piyasanın altında', color: c.p, cls: 'band' }]);
+    $('#lg-fark').querySelectorAll('i').forEach((i, n) => { i.style.background = n ? c.p : c.t; });
+    const sonuc = farkChart($('#grafik-fark'), fr, {
+      lim: S.farkL > 0 ? S.farkL / 100 : null,
+      tip: (d) => {
+        const a = D.aMap.get(d.donem), t2 = D.tMap.get(d.donem);
+        return { head: etiketOf(d.donem) + (a && a.kismi ? KISMI_NOT : ''), lines: [['Fark', fmtP(d.v)], ['Piyasa', fmtN(a && a[F]), c.p], ['Türkşeker uygulanan', fmtN(t2 && t2[F]), c.t], ['₺ farkı (' + unit() + ')', fmtD(d.r['fark_' + F])]], note: d.eksik };
+      },
+    });
+
+    root.querySelectorAll('[data-fl]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.fl === S.farkL)));
+    const sl = $('#fark-l'), enb = sonuc && ok(sonuc.max) ? Math.ceil(sonuc.max * 100) : 60;
+    sl.max = String(Math.max(10, Math.min(100, enb)));
+    sl.value = String(S.farkL > 0 ? S.farkL : sl.max);
+    $('#fark-lv').textContent = S.farkL > 0 ? '±%' + S.farkL : 'tümü';
+    const ek = sonuc && sonuc.kesik
+      ? ' Ölçek ±%' + S.farkL + ': ' + sonuc.kesik + ' ay bu sınırı aşıyor; bu çubuklar kesik işaretiyle gösterildi, gerçek değer çubuğa dokununca görünür.'
+      : '';
+    $('#fark-note').textContent = $('#fark-note').textContent + ek;
   }
 
   // ---------- Grafik yardımcıları ----------
@@ -1023,9 +1065,20 @@ b,strong{font-weight:600}
     const H = W < 520 ? 220 : 260; box.style.minHeight = H + 'px';
     const svg = d3.select(box).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`).style('display', 'block').style('touch-action', 'pan-y').style('overflow', 'visible');
     const vs = rows.map((r) => r.v).filter(ok);
-    const lo = Math.min(0, d3.min(vs)), hi = Math.max(0, d3.max(vs));
-    const ys = d3.scaleLinear([lo, hi], [0, 1]).nice(5), yt = ys.ticks(5);
-    const pf = (v) => (v === 0 ? '0' : (v > 0 ? '+' : '−') + '%' + n0(Math.abs(v * 100)));
+    let lo = Math.min(0, d3.min(vs)), hi = Math.max(0, d3.max(vs));
+    const lim = o.lim > 0 ? o.lim : null;
+    if (lim) { lo = Math.max(lo, -lim); hi = Math.min(hi, lim); if (hi - lo < 1e-9) hi = lim; }
+    const ys = d3.scaleLinear([lo, hi], [0, 1]).nice(5);
+    if (lim) { const [a0, a1] = ys.domain(); ys.domain([Math.max(a0, -lim), Math.min(a1, lim)]); }
+    const yt = ys.ticks(5);
+    const dec = yt.length > 1 && Math.abs(yt[1] - yt[0]) < 0.0095;
+    if (lim && yt.length > 1) {
+      const st = Math.abs(yt[1] - yt[0]), [e0, e1] = ys.domain();
+      if (Math.abs(e1 - lim) < 1e-9 && e1 - yt[yt.length - 1] > st * 0.35) yt.push(e1);
+      if (Math.abs(e0 + lim) < 1e-9 && yt[0] - e0 > st * 0.35) yt.unshift(e0);
+    }
+    const pf = (v) => (Math.abs(v) < 1e-12 ? '0' : (v > 0 ? '+' : '−') + '%' + (dec ? n1(Math.abs(v * 100)) : n0(Math.abs(v * 100))));
+    const [d0, d1] = ys.domain(), cv = (v) => Math.max(d0, Math.min(d1, v)), kes = (v) => v < d0 - 1e-12 || v > d1 + 1e-12;
     const m = { t: 10, r: 6, b: 24, l: measureTicks(svg, yt.map(pf)) + 10 };
     const y = d3.scaleLinear(ys.domain(), [H - m.b, m.t]);
     const x0 = rows[0].t, x1 = rows[rows.length - 1].t;
@@ -1036,8 +1089,16 @@ b,strong{font-weight:600}
     const c = C(), rx = Math.min(3, xb.bandwidth() / 2);
     svg.append('g').selectAll('rect').data(rows.filter((r) => ok(r.v))).join('rect')
       .attr('x', (r) => xb(r.donem)).attr('width', xb.bandwidth())
-      .attr('y', (r) => y(Math.max(0, r.v))).attr('height', (r) => Math.max(1, Math.abs(y(r.v) - y(0))))
+      .attr('y', (r) => y(Math.max(0, cv(r.v)))).attr('height', (r) => Math.max(1, Math.abs(y(cv(r.v)) - y(0))))
       .attr('rx', rx).attr('fill', (r) => (r.v >= 0 ? c.t : c.p)).attr('fill-opacity', (r) => (r.eksik ? 0.45 : 1));
+    // Ölçeğin dışına taşan çubuklar: uçta kesik işareti
+    const K = rows.filter((r) => ok(r.v) && kes(r.v));
+    const kg = svg.append('g').attr('stroke', 'var(--color-panel, var(--color-bg))').attr('stroke-width', 2);
+    K.forEach((r) => {
+      const yy = y(cv(r.v)) + (r.v > 0 ? 7 : -7), x0b = xb(r.donem) - 1, x1b = xb(r.donem) + xb.bandwidth() + 1;
+      kg.append('line').attr('x1', x0b).attr('x2', x1b).attr('y1', yy + 2).attr('y2', yy - 2);
+      kg.append('line').attr('x1', x0b).attr('x2', x1b).attr('y1', yy + 6).attr('y2', yy + 2);
+    });
     // x eksen (yıl / ay)
     const months = rows.length;
     const maxT = Math.max(2, Math.floor((W - m.l - m.r) / 56));
@@ -1052,13 +1113,14 @@ b,strong{font-weight:600}
       const [px] = d3.pointer(ev, svg.node());
       const i = Math.max(0, Math.min(rows.length - 1, Math.floor((px - m.l) / xb.step())));
       const r = rows[i]; if (!r || !ok(r.v)) return;
-      hl.attr('x', xb(r.donem) - 1).attr('width', xb.bandwidth() + 2).attr('y', y(Math.max(0, r.v)) - 1).attr('height', Math.max(1, Math.abs(y(r.v) - y(0))) + 2).style('opacity', 1);
+      hl.attr('x', xb(r.donem) - 1).attr('width', xb.bandwidth() + 2).attr('y', y(Math.max(0, cv(r.v))) - 1).attr('height', Math.max(1, Math.abs(y(cv(r.v)) - y(0))) + 2).style('opacity', 1);
       const t = o.tip(r);
-      tipShow(tip, box, x(r.t), y(Math.max(0, r.v)), t.head, t.lines, t.note);
+      tipShow(tip, box, x(r.t), y(Math.max(0, cv(r.v))), t.head, t.lines, [t.note, kes(r.v) ? 'Çubuk ölçek sınırında kesildi; gerçek değer yukarıda' : ''].filter(Boolean).join(' · '));
     };
     svg.append('rect').attr('x', m.l).attr('y', 0).attr('width', W - m.l - m.r).attr('height', H - m.b).attr('fill', 'transparent')
       .on('pointermove', show).on('pointerdown', show)
       .on('pointerleave', (ev) => { if (ev.pointerType !== 'mouse') return; tip.style.opacity = 0; hl.style('opacity', 0); });
+    return { kesik: K.length, max: d3.max(vs, (v) => Math.abs(v)) };
   }
 
   // Yıllık grup çubukları
@@ -1329,18 +1391,7 @@ b,strong{font-weight:600}
       },
     });
 
-    // Fark
-    let fr = D.fark.data.map((r) => ({ t: toDate(r.donem), donem: r.donem, v: r['fark_' + k], r, eksik: gunNot(D.tMap.get(r.donem) || {}) }));
-    fr = fr.filter((r) => inR(r.donem));
-    $('#fark-note').textContent = '(Türkşeker uygulanan fiyatı ÷ piyasa fiyatı) − 1, fabrika teslim, ' + kdvL() + '. Soluk çubuklar: o ayın bir kısmında genel iskontolu fiyat yok; kampanya fiyatları kullanıldı veya gün hesaba girmedi.';
-    legend($('#lg-fark'), [{ label: 'Türkşeker piyasanın üzerinde', color: c.t, cls: 'band' }, { label: 'Türkşeker piyasanın altında', color: c.p, cls: 'band' }]);
-    $('#lg-fark').querySelectorAll('i').forEach((i, n) => { i.style.background = n ? c.p : c.t; });
-    farkChart($('#grafik-fark'), fr, {
-      tip: (d) => {
-        const a = D.aMap.get(d.donem), t2 = D.tMap.get(d.donem);
-        return { head: etiketOf(d.donem) + (a && a.kismi ? KISMI_NOT : ''), lines: [['Fark', fmtP(d.v)], ['Piyasa', fmtN(a && a[F]), c.p], ['Türkşeker uygulanan', fmtN(t2 && t2[F]), c.t], ['₺ farkı (' + unit() + ')', fmtD(d.r['fark_' + F])]], note: d.eksik };
-      },
-    });
+    drawFark();
 
     // Yıllık
     if (D.ok('yillik') && D.ok('ts_yillik')) {
